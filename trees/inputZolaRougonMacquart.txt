@@ -1,0 +1,1 @@
+(((((03-VentreParis,01-FortuneRougon),02-Curee),(((08-PageAmour,06-SonExcellence),05-FauteAbbe),04-ConquetePlassans)),((11-BonheurDames,10-PotBouille),(09-Nana,07-Assommoir))),(((((20-DocteurPascal,12-JoieVivre),17-BeteHumaine),18-Argent),16-Reve),(((15-Terre,13-Germinal),14-Oeuvre),19-Debacle)));
