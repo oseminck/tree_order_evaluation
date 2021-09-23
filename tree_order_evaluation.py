@@ -3,7 +3,7 @@ import os.path, re, glob, sys, random
 import matplotlib.pyplot as plt
 
 """
-    tree_order_evaluation v1.0, 2021-06-15
+    tree_order_evaluation v2.0, 2021-09-23
     Reordering the internal nodes of a tree to obtain an ordering of the laves which
     minimise the number of conflicts with the lexicographic order of their labels.
     Copyright (C) 2020-2021 - Philippe Gambette, Olga Seminck
@@ -176,7 +176,7 @@ def allPermutations(list):
 
 # count the number of crossings between the leaves of the clusters inside clusterList
 # if all the clusters of clusterList are displayed in this order from left to right
-def clusterCrossings(clusterList,t):
+def clusterCrossings(clusterList, t):
    crossingNb = 0
    # check all pairs of clusters
    for i in range(0,len(clusterList)):
@@ -236,6 +236,84 @@ def orderAndCountCrossingsBelow(t,v):
    return crossings
    
 
+# order contains a dict associating each leaf label to a number from 1 to n (= number of distinct years)
+def orderAndCountLeavesBelow(tree, order, v, n):
+   result = ""
+   bestValueSoFar = 0
+   #print("Visiting node " + str(v))
+   tree["bestOrderForLeaves"][v] = {}
+   for l in range(1, n+1):
+      tree["bestOrderForLeaves"][v][l] = {}
+      for r in range(l, n+1):
+         tree["bestOrderForLeaves"][v][l][r] = {"nbKeptLeaves":0, "keptLeaves":[]}
+
+   if v not in tree["children"]:
+      # v is a leaf
+      for l in range(1, n+1):
+         for r in range(1, n+1):
+            if order[v] >= l and order[v] <= r:
+               tree["bestOrderForLeaves"][v][l][r] = {"nbKeptLeaves":1, "keptLeaves":[v]}
+      result = "Just a leaf... so we keep it!"
+      bestValueSoFar = 1
+   else:
+      # v is not a leaf, recursively compute the optimal number of kept leaves for children
+      children = tree["children"][v]
+      #print(str(v)+" has "+str(len(children))+" children")
+      
+      for c in children:
+         orderAndCountLeavesBelow(tree, order, c, n)
+      
+      # build the list of all possible interval decompositions depending on the number of children
+      intervalList = []
+      for l in range(1,n+1):
+         intervalList.append([l])
+      for c in children:
+         augmentedIntervalList = []
+         #print(intervalList)
+         for list in intervalList:
+            maxSoFar = list[len(list)-1]
+            for i in range(maxSoFar, n+1):
+               #print("Augmented list")
+               newList = list.copy()
+               newList.append(i)
+               #print(newList)
+               augmentedIntervalList.append(newList)
+         intervalList = augmentedIntervalList
+         #print(intervalList)
+      
+      # for each interval (l,r) find the best interval decomposition among children
+      bestValueSoFar = 0
+      bestPermutationSoFar = {}
+      bestKeptLeafSetSoFar = []
+      #print("Try these orders of the children: "+str(permutations))
+      
+      permutations = allPermutations(children)
+      
+      for permutation in permutations:
+         #print(permutation)
+         for intervals in intervalList:
+            computedValue = 0
+            keptLeaves = []
+            i = 0
+            for c in permutation:
+               computedValue += tree["bestOrderForLeaves"][c][intervals[i]][intervals[i+1]]["nbKeptLeaves"]
+               keptLeaves += tree["bestOrderForLeaves"][c][intervals[i]][intervals[i+1]]["keptLeaves"]
+               i += 1
+            #print("Test for interval ["+str(intervals[0])+","+str(intervals[len(intervals)-1])+"]")
+            if computedValue > tree["bestOrderForLeaves"][v][intervals[0]][intervals[len(intervals)-1]]["nbKeptLeaves"]:
+               #print("Interval ["+str(intervals[0])+","+str(intervals[len(intervals)-1])+"] improved from "+ str(tree["bestOrderForLeaves"][v][intervals[0]][intervals[len(intervals)-1]]["nbKeptLeaves"]) + " to " + str(computedValue))
+               tree["bestOrderForLeaves"][v][intervals[0]][intervals[len(intervals)-1]]["nbKeptLeaves"] = computedValue
+               tree["bestOrderForLeaves"][v][intervals[0]][intervals[len(intervals)-1]]["keptLeaves"] = keptLeaves 
+               tree["bestOrderForLeaves"][v][intervals[0]][intervals[len(intervals)-1]]["permutation"] = permutation
+               if computedValue > bestValueSoFar:
+                  bestValueSoFar = computedValue
+                  bestPermutationSoFar = permutation
+                  bestKeptLeafSetSoFar = keptLeaves
+      result = str(len(leaves)-bestValueSoFar) + " leaves to delete.\n" + str(bestValueSoFar) + " leaves to keep: " + str([tree["label"][k] for k in bestKeptLeafSetSoFar])
+   return [result, len(leaves)-bestValueSoFar]
+      
+
+
 def printNewickTree(t):
    return printNewick(t,0)+";"
 
@@ -265,7 +343,15 @@ def pseudoRandomOrder(n):
       list[pseudoRandomNumber] = list[i]
    return pseudoRandomList
 
+
+
+
+
+
+
+
 with open(inputFile) as fd:
+   # First criterion: number of conflicts
    i=0
    for line in fd.readlines():
       i += 1
@@ -275,24 +361,26 @@ with open(inputFile) as fd:
    fd.close()
    # Reorder the tree while counting the number of crossings
    nbOfCrossings = orderAndCountCrossingsBelow(t,0)
+   
    print("Correctly ordered dendrogram: "+printNewickTree(t))
    outputFile.writelines("Best ordered dendrogram:\n"+printNewickTree(t)+"\n")
    print("Nb of conflicts: "+str(nbOfCrossings))
-   outputFile.writelines("Nb of conflicts: "+str(nbOfCrossings))
+   outputFile.writelines("Nb of conflicts: "+str(nbOfCrossings)+"\n")
    
-   outputFile.close()
    
-   # Count the number of conflicts in the randomly re-ordered tree
+   # Count the number of conflicts by simulating testNb random orders
    crossingNbList = []
    crossingNbDistribution = {}
    test = 0
+   print("Generating " + str(testNb) + " random orders to evaluate a p-value for this number of conflicts")
    while test < testNb:
+      if test % int(testNb/10) == 0:
+         print(str(int(test/testNb*100))+"%")
       order = pseudoRandomOrder(len(t["label"].keys()))
       test += 1
       #print("tree1"+str(printNewickTree(t)))
       newTree = openNewick(printNewickTree(t))
       i = 0
-      
       for leaf in newTree["label"].keys():
          newTree["label"][leaf] = str(order[i])
          i += 1
@@ -305,6 +393,8 @@ with open(inputFile) as fd:
       else:
          crossingNbDistribution[crossingNbNewTree] = 1
       
+   print("100%")
+   # Analysis of the results of the simulation
    minC = sorted(crossingNbDistribution.keys())[0]
    maxV = 0
    nbOfRandomOrderingsWithLessCrossings = 0
@@ -322,4 +412,82 @@ with open(inputFile) as fd:
    plt.xlabel('Nb of conflicts between chronology and best dendrogram leaf ordering')
    plt.ylabel('Percentage of random orderings')
    plt.text(minC, maxV, r' '+str(nbOfCrossings)+' conflicts found for the best ordered dendrogram\n'+str(nbOfRandomOrderingsWithLessCrossings)+' random orderings over '+str(testNb)+' with at most '+str(nbOfCrossings)+' conflicts')
+   plt.show()
+
+   # Second criterion: number of leaves to delete
+   order = {}
+   leaves = t["cluster"][0]
+   leafLabels = []
+   for leaf in leaves:
+      leafLabels.append(t["label"][leaf])
+   leafLabels.sort()
+   nb = 0
+   for leaf in leaves:
+      order[leaf] = leafLabels.index(t["label"][leaf])+1
+      nb += 1
+   t["bestOrderForLeaves"] = {}
+   
+   output = orderAndCountLeavesBelow(t, order, 0, len(leaves))
+   outputFile.writelines(output[0]+"\n")
+   print("")
+   print(output[0])
+   nbOfRemovedLeaves = output[1]
+   
+   outputFile.close()
+   
+   # Count the number of leaves to remove by simulating testNb random orders
+   removedLeafNbList = []
+   removedLeafNbDistribution = {}
+   test = 0
+   print("Generating " + str(testNb) + " random orders to evaluate a p-value for this number of leaves to remove")
+   while test < testNb:
+      if test % int(testNb/10) == 0:
+         print(str(int(test/testNb*100))+"%")
+      order = pseudoRandomOrder(len(t["label"].keys()))
+      #print(order)
+      test += 1
+      #print("tree1"+str(printNewickTree(t)))
+      newTree = openNewick(printNewickTree(t))
+      
+      i = 0
+      usedOrder = {}
+      for leaf in newTree["label"].keys():
+         newTree["label"][leaf] = str(order[i])
+         usedOrder[leaf] = int(order[i])
+         i += 1
+
+      leaves = newTree["cluster"][0]
+      leafLabels = []
+      for leaf in leaves:
+         leafLabels.append(newTree["label"][leaf])
+      newTree["bestOrderForLeaves"] = {}
+      
+      #print("tree2"+str(printNewickTree(newTree)))
+      
+      removedLeafNbNewTree = orderAndCountLeavesBelow(newTree, usedOrder, 0, len(leaves))[1]
+      removedLeafNbList.append(removedLeafNbNewTree)
+      if removedLeafNbNewTree in removedLeafNbDistribution:
+         removedLeafNbDistribution[removedLeafNbNewTree] += 1
+      else:
+         removedLeafNbDistribution[removedLeafNbNewTree] = 1
+      
+   print("100%")
+   # Analysis of the results of the simulation
+   minC = sorted(removedLeafNbDistribution.keys())[0]
+   maxV = 0
+   nbOfRandomOrderingsWithLessremovedLeafs = 0
+   for c in sorted(removedLeafNbDistribution.keys()):
+      if c <= nbOfRemovedLeaves:
+         nbOfRandomOrderingsWithLessremovedLeafs += removedLeafNbDistribution[c]
+      removedLeafNbDistribution[c] = removedLeafNbDistribution[c]*100/testNb
+      if removedLeafNbDistribution[c] > maxV:
+         maxV=removedLeafNbDistribution[c]
+      print(str(c)+" removed leaves: "+str(removedLeafNbDistribution[c])+"% of random orderings")
+   print("For each nb of removed leaves, percentage of random orderings having exactly this number of removed leaves:")
+   print(removedLeafNbDistribution)
+   
+   plt.bar(list(removedLeafNbDistribution.keys()), removedLeafNbDistribution.values(), color='g')
+   plt.xlabel('Nb of removed leaves to obtain a perfect chronological leaf ordering')
+   plt.ylabel('Percentage of random orderings')
+   plt.text(minC, maxV, r' '+str(nbOfRemovedLeaves)+' leaves to remove for the best ordered dendrogram\n'+str(nbOfRandomOrderingsWithLessremovedLeafs)+' random orderings over '+str(testNb)+' with at most '+str(nbOfRemovedLeaves)+' removed leaves')
    plt.show()
