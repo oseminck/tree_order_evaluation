@@ -1,6 +1,6 @@
 # tree_order_evaluation
 ## About
-Code presented in the communication *Evaluating Hierarchical Clustering Methods for Corpora with Chronological Order* presented at EADH 2021 by Olga Seminck, Philippe Gambette, Dominique Legallois and Thierry Poibeau.
+Code presented in the communication *Evaluating Hierarchical Clustering Methods for Corpora with Chronological Order* presented at the conference without proceedings EADH 2021 by Olga Seminck, Philippe Gambette, Dominique Legallois and Thierry Poibeau.
 
 The figure below illustrates what the script `tree_order_evaluation` does: it reorders the children of the internal nodes of the tree in order to minimise the number of conflicts between the order of the leaves of the tree and the lexicographic order of their labels (for example there is a conflict between leaves `1874a_Nouveaux_contes_a_Ninon` and `1865_La_confession_de_Claude`: the first one appears before the second one in the order of the leaves from top to bottom whereas the first one is ranked after the second one in the lexicographic - or chronologic - order). 
 
@@ -9,7 +9,7 @@ The figure below illustrates what the script `tree_order_evaluation` does: it re
 Note that the code currently ranks according to the lexicographic order of the leaf labels: we sometimes added letter `a` or `b` right after the year in the file name in order to minimise the number of conflicts in the same solution, when considering novels whose first publication year is identical. The trees in the figure above were drawn automatically from their Newick format using [Dendroscope](https://uni-tuebingen.de/fr/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/algorithms-in-bioinformatics/software/dendroscope/).
 
 ## Acknowledgement
-This work was funded in part by the French government under the management of the Agence Nationale de la Recherche as part of the “Investissements d’avenir” program, reference ANR-19-P3IA-0001 (PRAIRIE 3IA Institute).
+This work was funded in part by the French government under the management of the Agence Nationale de la Recherche as part of the “Investissements d’avenir” program, references ANR-19-P3IA-0001 (PRAIRIE 3IA Institute) and ANR-16-IDEX-0003 (I-Site Future, programme “Cité des dames, créatrices dans la cité”).
 
 ## Data
 Content of the `tree` folder:
@@ -31,3 +31,5 @@ The value of variable `testNb` may be changed in order to change the number of r
 ## Versions
 * v1.0: computation of the minimum number of conflicts and significance evaluation by random simulations
 * v2.0: added the computation of the minimum number of leaves to delete
+* v2.1: corrected a bug (child permutation initialization) and saved the time taken to compute parameters
+* v2.2: added a code to compute parameters for all files of a folder
