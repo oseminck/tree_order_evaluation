@@ -1,0 +1,1 @@
+(((1676-Racine-Berenice,1676-Racine-Andromaque),((1680-Pradon-Statira,1700-Pradon-Scipion),(1690-Campistron-Arminius,1687-Campistron-Achille))),((1773-Voltaire-LoisDeMinos,1779-Voltaire-Agathocle),(1727-Marivaux-Annibal,((1721-LaMotte-Machabees,1723-LaMotte-InesDeCastro),(1708-Crebillon-Electre,1748-Crebillon-Catilina)))));

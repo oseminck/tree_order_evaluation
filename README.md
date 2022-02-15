@@ -13,11 +13,13 @@ This work was funded in part by the French government under the management of th
 
 ## Data
 Content of the `tree` folder:
-* `inputBalzac.txt`, `inputZolaRougonMacquart.txt`: first test files generated from corpora of French novels by Honoré de Balzac and the Rougon Macquart cycle of 20 novels
-* `inputCounterExample1.txt`, `inputCounterExample2.txt`: examples of distinct trees minimizing distinct criteria, 24 conflicts and an optimal number of 5 leaves to delete (e.g. 1, 3, 6, 7 and 8) for inputCounterExample1.txt versus an optimal number of 17 conflicts (1 conflicting with 2, 4, 5, 6 and 7; 3 with 4, 5, 6 and 7; 6 and 7 with 4 and 5; 10 with 9 and 11; 11 with 8 and 9) and 6 leaves to delete (e.g. 1, 3, 6, 7, 10, 11).
-* `inputZola.txt`: test file generated from the corpus of French novels by Émile Zola extracted from [corpus CIDRE](https://www.ortolang.fr/market/corpora/cidre)
-* `inputMoisl2020.txt`: tree provided in Figure 15 on page 16 of H. Moisl (2020): “[How to visualize high-dimensional data: a roadmap](https://doi.org/10.46298/jdmdh.5594)”, *Journal of Data Mining and Digital Humanities*, Special Issue on Visualisations in Historical Linguistics: 1–19.
-* `inputSchoech2012.txt`: rooted version of the tree provided by C. Schöch at https://dragonfly.hypotheses.org/43
+* `inputBalzac.txt` (9 leaves, 0 inversions, 0 leaf to delete), `inputZolaRougonMacquart.txt` (20 leaves, 13 inversions, 6 leaves to delete): first test files generated from corpora of French novels by Honoré de Balzac and the Rougon Macquart cycle of 20 novels
+* `inputCounterExample1.txt`, `inputCounterExample2.txt` (11 leaves, 17 inversions, 5 leaves to delete): examples of distinct trees minimizing distinct criteria, 24 inversions and an optimal number of 5 leaves to delete (e.g. 1, 3, 6, 7 and 8) for inputCounterExample1.txt versus an optimal number of 17 inversions (1 inversed with 2, 4, 5, 6 and 7; 3 with 4, 5, 6 and 7; 6 and 7 with 4 and 5; 10 with 9 and 11; 11 with 8 and 9) and 6 leaves to delete (e.g. 1, 3, 6, 7, 10, 11) for inputCounterExample2.txt.
+* `inputCounterExampleSimpler1.txt`, `inputCounterExampleSimpler2.txt` (9 leaves, 10 inversions, 3 leaves to delete): smaller examples of examples of distinct trees minimizing distinct criteria, 11 inversions and an optimal number of 3 leaves to delete (e.g. 1, 5 and 6) for inputCounterExampleSimpler1.txt versus an optimal number of 10 inversions (1 inversed with 2, 3, 4 and 5; 3 and 4 with 5; 6 and 8 with 9; 7 with 8 and 9) and 4 leaves to delete (e.g. 1, 5, 8, 9) for inputCounterExampleSimpler2.txt.
+* `inputZola.txt` (35 leaves, 33 inversions, 8 leaves to delete): test file generated from the corpus of French novels by Émile Zola extracted from [corpus CIDRE](https://www.ortolang.fr/market/corpora/cidre)
+* `inputMoisl2020.txt` (27 leaves): tree provided in Figure 15 on page 16 of H. Moisl (2020): “[How to visualize high-dimensional data: a roadmap](https://doi.org/10.46298/jdmdh.5594)”, *Journal of Data Mining and Digital Humanities*, Special Issue on Visualisations in Historical Linguistics: 1–19.
+* `inputSchoech2012.txt` (12 leaves, 2 inversions, 1 leaf to delete): rooted version of the tree provided by C. Schöch at https://dragonfly.hypotheses.org/43
+* `inputGabay2021.txt` (13 leaves, 5 inversions, 2 leaves to delete): subtree of tragedies of Figure 9 of S. Gabay (2021): “[Beyond Idiolectometry? On Racine's Stylometric Signature](https://hal.archives-ouvertes.fr/hal-03402994)”, *Conference on Computational Humanities Research 2021*, p. 359-376.
 
 ## Using the code
 Please put the input tree in the Newick format in a file named input.txt in the same folder as the `script tree_order_evaluation.py`. 
