@@ -58,7 +58,7 @@ def openNewick(line):
     cluster = {}
     mayBeALeaf = True
     hasASibling = False
-    while i<len(line):
+    while i < len(line):
         if line[i] == "(":
             # update the distance from root for the new found node
             currentDistanceFromRoot += 1
@@ -174,6 +174,7 @@ def allPermutations(list):
    return allPermutationsAfterElement(list,0)
 
 
+
 # count the number of crossings between the leaves of the clusters inside clusterList
 # if all the clusters of clusterList are displayed in this order from left to right
 def clusterCrossings(clusterList, t):
@@ -218,7 +219,7 @@ def orderAndCountCrossingsBelow(t,v):
       permutations = allPermutations(children)
       #print("Try these orders of the children: "+str(permutations))
       bestPermutation = permutations[0].copy()
-      bestCrossingNb = len(t["label"])
+      bestCrossingNb = len(t["label"])*len(t["label"])
       for permutation in permutations:
          clusters = []
          for c in permutation:
@@ -227,14 +228,17 @@ def orderAndCountCrossingsBelow(t,v):
          #print("crossing number of vertex order "+str(permutation)+": "+str(crossingNb))
          if crossingNb < bestCrossingNb:
             bestCrossingNb = crossingNb
+            #print("Better crossing number!")
             bestPermutation = permutation.copy()
       crossings = bestCrossingNb
       #print("best permutation "+str(bestPermutation))
       t["children"][v] = bestPermutation
       #print("crossing number of best vertex order "+permutationToStr(bestPermutation,t)+": "+str(bestCrossingNb))
       for c in children:
-         crossings += orderAndCountCrossingsBelow(t,c)
-   #print(crossings)
+         crossingsBelowC = orderAndCountCrossingsBelow(t,c)
+         #print(str(crossingsBelowC) + " crossings below child " + str(c))
+         #print(str(crossings) + " crossings found so far")
+         crossings += crossingsBelowC
    return crossings
    
 
@@ -313,7 +317,15 @@ def orderAndCountLeavesBelow(tree, order, v, n):
                   bestValueSoFar = computedValue
                   bestPermutationSoFar = permutation
                   bestKeptLeafSetSoFar = keptLeaves
-      result = str(len(leaves)-bestValueSoFar) + " leaves to delete.\n" + str(bestValueSoFar) + " leaves to keep: " + str([tree["label"][k] for k in bestKeptLeafSetSoFar])
+      # Singular or plural of "leaf" / "leaves"
+      deletedLeafTermination = "ves"
+      if len(leaves)-bestValueSoFar <= 1:
+         deletedLeafTermination = "f"
+      keptLeafTermination = "ves"
+      if bestValueSoFar <= 1:
+         keptLeafTermination = "f"
+      # Output message
+      result = str(len(leaves)-bestValueSoFar) + " lea" + deletedLeafTermination + " to delete.\n" + str(bestValueSoFar) + " lea" + keptLeafTermination + " to keep: " + str([tree["label"][k] for k in bestKeptLeafSetSoFar])
    return [result, len(leaves)-bestValueSoFar]
       
 
@@ -457,13 +469,15 @@ with open(inputFile) as fd:
    
    outputFile.close()
    
+   """
    # Count the number of leaves to remove by simulating testNb random orders
    removedLeafNbList = []
    removedLeafNbDistribution = {}
    test = 0
    print("Generating " + str(testNb) + " random orders to evaluate a p-value for this number of leaves to remove")
    while test < testNb:
-      if test % int(testNb/10) == 0:
+      print(test)
+      if test % int(testNb/100) == 0:
          print(str(int(test/testNb*100))+"%")
       order = pseudoRandomOrder(len(t["label"].keys()))
       #print(order)
@@ -498,6 +512,7 @@ with open(inputFile) as fd:
    minC = sorted(removedLeafNbDistribution.keys())[0]
    maxV = 0
    nbOfRandomOrderingsWithLessremovedLeafs = 0
+   
    for c in sorted(removedLeafNbDistribution.keys()):
       if c <= nbOfRemovedLeaves:
          nbOfRandomOrderingsWithLessremovedLeafs += removedLeafNbDistribution[c]
@@ -508,11 +523,13 @@ with open(inputFile) as fd:
    print("For each nb of removed leaves, percentage of random orderings having exactly this number of removed leaves:")
    print(removedLeafNbDistribution)
    
+   
    plt.bar(list(removedLeafNbDistribution.keys()), removedLeafNbDistribution.values(), color='g')
    plt.xlabel('Nb of removed leaves to obtain a perfect chronological leaf ordering')
    plt.ylabel('Percentage of random orderings')
    plt.text(minC, maxV, r' '+str(nbOfRemovedLeaves)+' leaves to remove for the best ordered dendrogram\n'+str(nbOfRandomOrderingsWithLessremovedLeafs)+' random orderings over '+str(testNb)+' with at most '+str(nbOfRemovedLeaves)+' removed leaves')
    plt.show()
+   """
 
 
 """
