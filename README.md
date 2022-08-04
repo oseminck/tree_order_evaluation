@@ -21,6 +21,7 @@ Content of the `tree` folder:
 * `inputSchoech2012.txt` (12 leaves, 2 inversions, 1 leaf to delete): rooted version of the tree provided by C. Schöch at https://dragonfly.hypotheses.org/43
 * `inputGabay2021.txt` (13 leaves, 5 inversions, 2 leaves to delete): subtree of tragedies from Figure 9 of S. Gabay (2021): “[Beyond Idiolectometry? On Racine's Stylometric Signature](https://hal.archives-ouvertes.fr/hal-03402994)”, *Conference on Computational Humanities Research 2021*, p. 359-376.
 * `inputCorrespondanceHugo.txt` (21 leaves, 4 inversions, 3 leaves to delete): subtree of the correspondance of Victor Hugo from Figure 1 of C. Labbé and D. Labbé (2013): “[Existe-t-il un genre épistolaire ? Hugo, Flaubert et Maupassant](https://halshs.archives-ouvertes.fr/halshs-00436351v2/)”, *dixièmes Nouvelles Journées de l’ERLA* (Brest 20-21 novembre 2008), Banks David (dir.) *Le texte épistolaire du XVIIe siècle à nos jours. Aspects linguistiques*, L’Harmattan, p. 53-85.
+* `inputVoeuxPresidentiels.txt` (120 inversions, 14 leaves to delete): subtree of the New Year’s addresses by French presidents from 1959 to 2001 from Figure 2.4 of J.-M. Leblanc (2016): *Analyses lexicométriques des vœux présidentiels*, ISTE editions, p. 64.
 
 ## Using the code
 Please put the input tree in the Newick format in a file named input.txt in the same folder as the `script tree_order_evaluation.py`. 
