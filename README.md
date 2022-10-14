@@ -1,6 +1,8 @@
 # tree_order_evaluation
 ## About
-Code presented in the communication *Evaluating Hierarchical Clustering Methods for Corpora with Chronological Order* presented at the conference without proceedings EADH 2021 by Olga Seminck, Philippe Gambette, Dominique Legallois and Thierry Poibeau.
+Code presented :
+* in the communication *Evaluating Hierarchical Clustering Methods for Corpora with Chronological Order* presented at the conference without proceedings *EADH 2021* by Olga Seminck, Philippe Gambette, Dominique Legallois and Thierry Poibeau ([video](https://www.youtube.com/watch?v=DmWgAzviTsY));
+* in the following paper:  Laurent Bulteau, Philippe Gambette, Olga Seminck (2022), [Reordering a tree according to an order on its leaves](https://drops.dagstuhl.de/opus/volltexte/2022/16151/pdf/LIPIcs-CPM-2022-24.pdf), *Proceedings of the 33rd Annual Symposium on Combinatorial Pattern Matching (CPM 2022)*, Leibniz International Proceedings in Informatics (LIPIcs), volume 223, p. 24.1-24.15.
 
 The figure below illustrates what the script `tree_order_evaluation` does: it reorders the children of the internal nodes of the tree in order to minimise the number of conflicts between the order of the leaves of the tree and the lexicographic order of their labels (for example there is a conflict between leaves `1874a_Nouveaux_contes_a_Ninon` and `1865_La_confession_de_Claude`: the first one appears before the second one in the order of the leaves from top to bottom whereas the first one is ranked after the second one in the lexicographic - or chronologic - order). 
 
@@ -33,7 +35,8 @@ On the second line, it will contain the ordered version of this tree with the mi
 The value of variable `testNb` may be changed in order to change the number of random orders generated to evaluate the probability of getting the observed number of conflicts (or less) by chance.
 
 ## Versions
-* v1.0: computation of the minimum number of conflicts and significance evaluation by random simulations
-* v2.0: added the computation of the minimum number of leaves to delete
-* v2.1: corrected a bug (child permutation initialization) and saved the time taken to compute parameters
-* v2.2: added a code to compute parameters for all files of a folder
+* v1.0 (2021-06-15): computation of the minimum number of conflicts and significance evaluation by random simulations
+* v2.0 (2021-09-23): added the computation of the minimum number of leaves to delete
+* v2.1 (2021-10-02): corrected a bug (child permutation initialization) and saved the time taken to compute parameters
+* v2.2 (2021-10-04): added a code to compute parameters for all files of a folder
+* v2.3 (2022-08-04): corrected a bug (worst-case initialisation was incorrect for the inversion number computation)
